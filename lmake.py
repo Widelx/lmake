@@ -1,78 +1,95 @@
 # pylint: disable=redefined-outer-name
 
 """
-A file that turns into an executable to
-- generates a user definded latex template
-- compiles latex document as well as clean residual files
+Root executable with helper
 """
+
 import argparse
-import os
+import sys
 from commands import (
     clean_project,
     create_template,
-    compile_pdf,
+    compile_tex,
     rename_main,
-    update_template,
+    reload_template,
 )
+from file_manip import is_ext_type
 
 
 def handle_argument(args) -> None:
     """
-    Check the argument validity
+    Call the functions associated to the given argument.
     """
     if args.rename:
         rename_main(args.rename)
-    elif args.clean:
-        clean_project()
-    elif args.template:
+
+    if args.clean:
+        print("Are you sure that you want to delete everything ? (Y/N) :", end="")
+        if input().lower() == "y":
+            clean_project()
+        else:
+            sys.exit(-1)
+
+    if args.template:
         create_template()
-    elif args.update_template:
-        update_template()
+
+    if args.reload_template:
+        reload_template()
 
     if args.compile:
-        # Checks argument is valid (.tex extension and existing file)
-        target = args.compile
-        if not target.endswith(".tex"):
-            print("The file is not a LaTeX file")
-            exit(-1)
-        elif not os.path.isfile(target):
-            print("The file does not exist")
-            exit(-1)
-        else:
-            compile_pdf(target)
-    exit(0)
+        compile_tex(None if args.compile is True else args.compile)
+
+
+def is_tex_file(target: str):
+    """
+    Check wether the target is a latex file.
+
+    This function does not check empty target (tagged as true).
+    """
+    if target is True or is_ext_type(target, ".tex"):
+        return target
+    else:
+        raise argparse.ArgumentTypeError("File must be a tex file.")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        prog="tool",
+        formatter_class=lambda prog: argparse.HelpFormatter(prog, max_help_position=50),
+    )
+    group = parser.add_mutually_exclusive_group()
 
-    parser.add_argument(
+    group.add_argument(
         "-c",
         "--compile",
-        type=str,
+        type=is_tex_file,
+        action="store",
+        const=True,
+        nargs="?",
         help="Compiles a latex file into a pdf.",
         metavar=("TEX_FILE"),
     )
-    parser.add_argument(
+    group.add_argument(
         "-r",
         "--rename",
         type=str,
+        action="store",
         help="Update the name of the latex main file",
         metavar=("NEW_NAME"),
     )
-    parser.add_argument(
+    group.add_argument(
         "-t",
         "--template",
         action="store_true",
         help="Creates a template from scratch.",
     )
-    parser.add_argument(
-        "-ut",
-        "--update-template",
+    group.add_argument(
+        "-rt",
+        "--reload-template",
         action="store_true",
-        help="Updates the previous template with the latest version.",
+        help="Reload the previous template with the latest version.",
     )
-    parser.add_argument(
+    group.add_argument(
         "-cl",
         "--clean",
         action="store_true",
@@ -81,4 +98,3 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     handle_argument(args)
-    print("No valid argument found.")
