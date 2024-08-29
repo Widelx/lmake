@@ -5,52 +5,73 @@ import re
 import sys
 
 from system import get_sys_var
+from data import TemplateData
 from constants import (
     TEMPLATE_ENV_FOLDER,
-    RE_TITLE_AUTHOR,
     ROOT_TEX,
     PROJ_TEMPLATE_FOLDER,
+    TEMPLATE_CUSTOMIZATION_FILE,
     TEMPLATE_SRC_FOLDER,
-    TEMPLATE_TITLE_FILE,
+    RE_AUTHOR,
+    RE_C_FOOTER,
+    RE_L_FOOTER,
+    RE_R_FOOTER,
+    RE_TITLE,
 )
 
 
-def customize_tplt(title: str, author: str) -> None:
+def customize_tplt() -> None:
     """
-    Customize the template with the given title and author.
+    Customize the template with user inputs.
     """
-    (old_title, old_author) = parse_tplt()
-    with open(
-        os.path.join(
-            os.getcwd(),
-            PROJ_TEMPLATE_FOLDER,
-            TEMPLATE_TITLE_FILE,
-        ),
-        "r+",
-    ) as f:
+    t_data: TemplateData = TemplateData()
+
+    f_path = os.path.join(
+        os.getcwd(), PROJ_TEMPLATE_FOLDER, TEMPLATE_CUSTOMIZATION_FILE
+    )
+    with open(f_path, "r") as f:
         data: str = f.read()
 
-        data = data.replace(old_title, title)
-        data = data.replace(old_author, author)
+    m: re.Match = re.search(RE_TITLE, data)
+    old_title = m.group(1)
+    m = re.search(RE_AUTHOR, data)
+    old_authors = m.group(1)
+    m = re.search(RE_L_FOOTER, data)
+    old_l_footer = m.group(1)
+    m = re.search(RE_C_FOOTER, data)
+    old_c_footer = m.group(1)
+    m = re.search(RE_R_FOOTER, data)
+    old_r_footer = m.group(1)
 
-        f.seek(0)
-        f.truncate()
+    data = data.replace(old_title, t_data.title)
+    data = data.replace(old_authors, t_data.authors)
+    data = data.replace(old_l_footer, t_data.l_footer)
+    data = data.replace(old_c_footer, t_data.c_footer)
+    data = data.replace(old_r_footer, t_data.r_footer)
+
+    with open(f_path, "w") as f:
         f.write(data)
 
 
-def parse_tplt() -> tuple[str, str]:
+def parse_tplt() -> None:
     """
     Parse the template with the title and author.
     """
+    t_data = TemplateData()
 
-    with open(f"{PROJ_TEMPLATE_FOLDER}/{TEMPLATE_TITLE_FILE}", "r") as f:
+    with open(f"{PROJ_TEMPLATE_FOLDER}/{TEMPLATE_CUSTOMIZATION_FILE}", "r") as f:
         data: str = f.read()
 
-    match: re.Match = re.search(RE_TITLE_AUTHOR, data, re.MULTILINE)
-    title: str = match.group("title")
-    author: str = match.group("author")
-
-    return (title, author)
+    m: re.Match = re.search(RE_TITLE, data)
+    t_data.title = m.group(1)
+    m = re.search(RE_AUTHOR, data)
+    t_data.authors = m.group(1)
+    m = re.search(RE_L_FOOTER, data)
+    t_data.l_footer = m.group(1)
+    m = re.search(RE_C_FOOTER, data)
+    t_data.c_footer = m.group(1)
+    m = re.search(RE_R_FOOTER, data)
+    t_data.r_footer = m.group(1)
 
 
 def tag_file_as_root(f_name: str) -> None:

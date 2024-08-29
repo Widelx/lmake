@@ -12,8 +12,12 @@ PROJ_SETTINGS_FOLDER: str = ".vscode"
 
 BUILD_FOLDER: str = "temp"
 
-TEMPLATE_TITLE_FILE: str = "title.tex"
+TEMPLATE_CUSTOMIZATION_FILE: str = "doc_data.tex"
 MAIN_TEX: str = "main.tex"
 ROOT_TEX: str = "% !TeX root ="
 
-RE_TITLE_AUTHOR: str = r"\\title{(?P<title>.*)}\n\\author{(?P<author>.*)}"
+RE_TITLE: str = r"\\title{(.*)}\n"
+RE_AUTHOR: str = r"\\author{(.*)}\n"
+RE_L_FOOTER: str = r"\\fancyfoot\[L\]{(.*)}\n"
+RE_C_FOOTER: str = r"\\fancyfoot\[C\]{(.*)}\n"
+RE_R_FOOTER: str = r"\\fancyfoot\[R\]{(.*)}\n"

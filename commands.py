@@ -9,6 +9,8 @@ import shutil
 
 from system import *
 from file_manip import normalize_name, update_ext
+from data import TemplateData
+from ui import launch_ui
 from constants import (
     BUILD_FOLDER,
     MAIN_TEX,
@@ -66,21 +68,10 @@ def compile_tex(target: str = None) -> None:
 def create_template() -> None:
     """
     Generates a custom template in the directory.
-
-    The generated template is issued from a copy stored elsewhere which is then edited with
-    the following parameter:
-    - name main tex file.
-    - title.
-    - author[s].
     """
-    # fmt: off
-    print              ("Template creation")
-    print              ("**********")
-    f_name: str = input("File name:")
-    title : str = input("Title    :")
-    author: str = input("Author   :")
-    print              ("**********")
-    # fmt: on
+    # Fetch the data popping up the ui window
+    launch_ui(update=False)
+    tdata = TemplateData()
 
     # Copy latex template in the current directory
     template_src: str = get_src_template_file(TEMPLATE_NAME)
@@ -92,26 +83,36 @@ def create_template() -> None:
     settings_dest: str = os.path.join(os.getcwd(), PROJ_SETTINGS_FOLDER)
     shutil.copytree(settings_src, settings_dest, dirs_exist_ok=True)
 
-    # Update template
-    customize_tplt(title, author)
-
-    if f_name:
-        rename_main(f_name)
+    # Update template and file name
+    customize_tplt()
+    if tdata.fname:
+        rename_main(tdata.fname)
 
 
 def reload_template() -> None:
     """
     Reload an existing template with the latest version available.
     """
-    (title, author) = parse_tplt()
-
     # Copy the template in the current directory
     src: str = get_src_template_file(TEMPLATE_NAME, PROJ_TEMPLATE_FOLDER)
     dst: str = os.path.join(os.getcwd(), PROJ_TEMPLATE_FOLDER)
     shutil.copytree(src, dst, dirs_exist_ok=True)
 
-    customize_tplt(title, author)
+    customize_tplt()
 
+def edit_template():
+    """
+    Edit an existing template.
+    """
+    parse_tplt()
+
+    # Fetch the data popping up the ui window
+    launch_ui(update=True)
+    customize_tplt()
+
+    tdata = TemplateData()
+    if tdata.fname:
+        rename_main(tdata.fname)
 
 def rename_main(new: str = MAIN_TEX) -> None:
     """
@@ -136,13 +137,22 @@ def clean_project() -> None:
     - removes the main tex file.
     - removes the template tree.
     """
-    main_file: str = find_main(os.getcwd())
-    remove_f(
-        [
-            main_file,
-            update_ext(main_file, ".pdf"),
-            PROJ_TEMPLATE_FOLDER,
-            PROJ_SETTINGS_FOLDER,
-            BUILD_FOLDER,
-        ]
-    )
+    if os.listdir(os.getcwd()) != []:
+        try:
+            main_file: str = find_main(os.getcwd())
+            remove_f(
+                [
+                    main_file,
+                    update_ext(main_file, ".pdf"),
+                ]
+            )
+        except FileNotFoundError:
+            pass
+
+        remove_f(
+            [
+                PROJ_TEMPLATE_FOLDER,
+                PROJ_SETTINGS_FOLDER,
+                BUILD_FOLDER,
+            ]
+        )

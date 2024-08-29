@@ -10,6 +10,7 @@ from commands import (
     clean_project,
     create_template,
     compile_tex,
+    edit_template,
     rename_main,
     reload_template,
 )
@@ -35,6 +36,9 @@ def handle_argument(args) -> None:
 
     if args.reload_template:
         reload_template()
+
+    if args.edit_template:
+        edit_template()
 
     if args.compile:
         compile_tex(None if args.compile is True else args.compile)
@@ -74,7 +78,7 @@ if __name__ == "__main__":
         "--rename",
         type=str,
         action="store",
-        help="Update the name of the latex main file",
+        help="Update name of latex main file",
         metavar=("NEW_NAME"),
     )
     group.add_argument(
@@ -87,13 +91,19 @@ if __name__ == "__main__":
         "-rt",
         "--reload-template",
         action="store_true",
-        help="Reload the previous template with the latest version.",
+        help="Reload previous template with the latest version.",
+    )
+    group.add_argument(
+        "-et",
+        "--edit-template",
+        action="store_true",
+        help="Edit attributes of an existing template.",
     )
     group.add_argument(
         "-cl",
         "--clean",
         action="store_true",
-        help=("Clean the project (template and main file)."),
+        help=("Clean project (template as well as main file)."),
     )
 
     args = parser.parse_args()
