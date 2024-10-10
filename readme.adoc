@@ -1,0 +1,44 @@
+:toc:
+= Latex environment for VS-Code
+
+*Author:* Guillaume de Maricourt. +
+*Contributor(s):* +
+*Dependecies:* link:https://www.python.org/[Python], link:https://www.tug.org/texlive/[TeX Live], link:https://github.com/James-Yu/LaTeX-Workshop[LaTeX-Workshop], link:https://git-scm.com/downloads[Git] +
+*Platforms:* Windows 10/11
+
+*Brief:* This script is made in order to automate writing latex documents for students in software engineering.
+*Detail:* A lot of time we spent on lab work report is dedicating to formatting code, screenshot as well as editiing the overall document template. +
+The project was born after loosing my link:https://www.office.com/[Office365] acess. I was looking for a better solution to automate my workflow without a cracked version of word. LaTeX came handy since part of the workflow can be automated, the project can be easily shared and versionned with link:https://git-scm.com/[Git] +
+*Contribution:* Feel free to make pull requests and open issues if you experience/discover bugs.
+
+.Github workflow
+[cols="15%,85%"]
+|=======================
+|Pull request |Describe the issue you are solving or the feature you are adding.
+|Issues       |Describe the issue you're experiencing and provide log informations as well as steps to reproduce it.
+|=======================
+
+== Setup
+Follow this link:doc/setup.adoc[procedure] to setup latex make. Make sure to edit every path you copy with yours.
+
+== Commands overview
+The following commands are callable directly using the alias `lmake`.
+By defaults link:https://github.com/James-Yu/LaTeX-Workshop[LaTeX-Workshop] will compile everytime you save a file. You can change this settings in the extension settings or in the `settings.json` code you copied.
+
+.Github workflow
+[cols="15%,15%,15%,55%"]
+|=======================
+|Command  |Argument  |Optionnal argument|Description
+|`-h`     |          |                  |Display command list.
+|`-c`     |          |`target`          |Compile latex document. If no argument is given look for root tag.
+|`-r`     |`new_name`|                  |Rename root latex file with `new_name`.
+|`-t`     |          |                  |Load template and prompts to edit the attributes.
+|`-rt`    |          |                  |Reload template to its latest version.
+|`-et`    |          |                  |Edit template attributes.
+|`-cl`    |          |                  |Clean all.
+|=======================
+
+== Templates
+We provide a template example. The idea behind it is to have to do once the preamble setup and exploit it for usage that are similars. IF you wish to change the default template you can update `TEMPLATE_VERSION` in `constants.py` file.
+
+However we dont explain how to create one or edit it. If you would like to do so please go through the given one and create a pull request to get help.
