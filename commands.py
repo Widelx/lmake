@@ -7,20 +7,19 @@ Top level commands called by the script
 import os
 import shutil
 
+from system import *
+from file_manip import normalize_name, update_ext
 from constants import (
     BUILD_FOLDER,
     MAIN_TEX,
-    TEMPLATE_SYS_ENV,
-    TEMPLATE_SRC_FOLDER,
     PROJ_TEMPLATE_FOLDER,
     TEMPLATE_NAME,
     PROJ_SETTINGS_FOLDER,
 )
-from file_manip import normalize_name, update_ext
-from system import *
 from tex_helper import (
     customize_tplt,
     find_main,
+    get_src_template_file,
     is_main,
     parse_tplt,
     tag_file_as_root,
@@ -84,23 +83,13 @@ def create_template() -> None:
     # fmt: on
 
     # Copy latex template in the current directory
-    template_src: str = os.path.join(
-        get_sys_var(TEMPLATE_SYS_ENV),
-        TEMPLATE_SRC_FOLDER,
-        TEMPLATE_NAME,
-    )
+    template_src: str = get_src_template_file(TEMPLATE_NAME)
+
     shutil.copytree(template_src, os.getcwd(), dirs_exist_ok=True)
 
     # Copy vscode settings in the current directory
-    settings_src: str = os.path.join(
-        get_sys_var(TEMPLATE_SYS_ENV),
-        TEMPLATE_SRC_FOLDER,
-        PROJ_SETTINGS_FOLDER,
-    )
-    settings_dest: str = os.path.join(
-        os.getcwd(),
-        PROJ_SETTINGS_FOLDER,
-    )
+    settings_src: str = get_src_template_file(PROJ_SETTINGS_FOLDER)
+    settings_dest: str = os.path.join(os.getcwd(), PROJ_SETTINGS_FOLDER)
     shutil.copytree(settings_src, settings_dest, dirs_exist_ok=True)
 
     # Update template
@@ -117,12 +106,7 @@ def reload_template() -> None:
     (title, author) = parse_tplt()
 
     # Copy the template in the current directory
-    src: str = os.path.join(
-        get_sys_var(TEMPLATE_SYS_ENV),
-        TEMPLATE_SRC_FOLDER,
-        TEMPLATE_NAME,
-        PROJ_TEMPLATE_FOLDER,
-    )
+    src: str = get_src_template_file(TEMPLATE_NAME, PROJ_TEMPLATE_FOLDER)
     dst: str = os.path.join(os.getcwd(), PROJ_TEMPLATE_FOLDER)
     shutil.copytree(src, dst, dirs_exist_ok=True)
 

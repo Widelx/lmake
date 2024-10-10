@@ -1,12 +1,16 @@
-# pylint: disable=unspecified-encoding
+# pylint: disable=unspecified-encoding, line-too-long
 
 import os
 import re
+import sys
 
+from system import get_sys_var
 from constants import (
+    TEMPLATE_ENV_FOLDER,
     RE_TITLE_AUTHOR,
     ROOT_TEX,
     PROJ_TEMPLATE_FOLDER,
+    TEMPLATE_SRC_FOLDER,
     TEMPLATE_TITLE_FILE,
 )
 
@@ -105,3 +109,25 @@ def find_main(dirpath: str) -> str:
         raise FileNotFoundError(dirpath, " No latex main file was found.")
 
     return os.path.join(os.getcwd(), main)
+
+
+def get_src_template_file(*args) -> str:
+    """
+    Return a path leading to a file or folder from source template.
+
+    Throws an error if path does not exists.
+    """
+    src = os.path.join(
+        get_sys_var(TEMPLATE_ENV_FOLDER), TEMPLATE_SRC_FOLDER, *list(args)
+    )  # If using a dedicated latex folder for templates
+    src_alt = os.path.join(
+        get_sys_var(TEMPLATE_ENV_FOLDER), *list(args)
+    )  # If not using a dedicated latex folder for templates
+
+    if os.path.exists(src):
+        return src
+    elif os.path.exists(src_alt):
+        return src_alt
+    else:
+        print("[ERROR] Template folder not found.")
+        sys.exit(-1)

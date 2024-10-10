@@ -2,7 +2,7 @@
 Project constants
 """
 
-TEMPLATE_SYS_ENV: str = "template"
+TEMPLATE_ENV_FOLDER: str = "template"
 TEMPLATE_NAME: str = "t_school_v1"
 TEMPLATE_SRC_FOLDER: str = "latex"
 
